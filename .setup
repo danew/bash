@@ -1,0 +1,42 @@
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+function generate_pwd {
+  pwd | sed s.$HOME.~.g | awk -F"/" '
+  BEGIN { ORS="/" }
+  END {
+  for (i=1; i<= NF; i++) {
+      if ((i == 1 && $1 != "") || i == NF-1 || i == NF) {
+        print $i
+      }
+      else if (i == 1 && $1 == "") {
+        print "/"$2
+        i++
+      }
+      else {
+        print ".."
+      }
+    }
+  }'
+}
+
+export PS1="\[\033[38;5;48m\]\@\[\e[m\] \$(generate_pwd) \[\e[32m\]=>\[\e[m\] "
+export PS2="| => "
+
+export EDITOR=/opt/homebrew/bin/micro
+
+export PATH="/usr/local/bin:$PATH"
+export PATH=~/.local/bin:$PATH
+
+export HISTCONTROL=ignorespace
+export YDIFF_OPTIONS='-s -w0 --wrap'
+
+export HOMEBREW_NO_AUTO_UPDATE=1
+
+export BASH_COMPLETION_COMPAT_DIR="/opt/homebrew/etc/bash_completion.d/"
+[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+
+eval "$(jump shell)"
+
+eval "$(fnm env --use-on-cd)"
+
+. "$HOME/.cargo/env"

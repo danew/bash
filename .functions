@@ -1,0 +1,89 @@
+function removeFromPath() {
+  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
+}
+
+function title {
+  echo -ne "\033]0;"$*"\007" # Rename terminal windows
+}
+
+function trash() {
+  command mv "$@" ~/.Trash ;
+}
+
+function pidown() {
+  echo "Downloading "~/Downloads/downloads/$1
+  scp -rp pi@10.0.1.154:~/Downloads/downloads/$1 ~/Desktop/pi/$1
+}
+
+function md() {
+  mkdir -p "$@" && cd "$@";
+}
+
+function twitch() {
+  streamlink https://www.twitch.tv/$1 best
+}
+
+function youtube() {
+  streamlink $1 best
+}
+
+function switch_dns {
+    INTERFACE=$1
+    if [ "$INTERFACE" = "An asterisk (*) denotes that a network service is disabled." ]; then
+        exit 1
+    else
+        DNS=$(networksetup -getdnsservers "$INTERFACE" | tr -d "\n")
+        if [ "$DNS" == "8.8.8.88.8.4.4" ]; then
+            sudo networksetup -setdnsservers "$INTERFACE" 172.20.1.5 172.20.1.6
+            echo "Switched to Orion DNS"
+        elif [ "$DNS" == "172.20.1.5172.20.1.6" ]; then
+            sudo networksetup -setdnsservers "$INTERFACE" 8.8.8.8 8.8.4.4
+            echo "Switched to Google DNS"
+        fi
+    fi
+}
+
+function dns() {
+  networksetup listallnetworkservices | xargs -I{} bash -c 'switch_dns "{}"'
+}
+
+function elasticmq {
+  cd ~/Software/elasticmq
+  java -jar elasticmq-server-1.1.0.jar
+}
+
+function aws-decode {
+  aws sts decode-authorization-message --encoded-message $1 | jq '.DecodedMessage | fromjson'
+}
+
+function github() {
+  CLEANED=$(echo $@ | sed 's/git clone //')
+  REPO=$(echo $CLEANED | cut -d: -f 1)
+  STRIPPED=$(echo $CLEANED | cut -d: -f 2)
+  PROJECT_GROUP=$(echo $STRIPPED | cut -d/ -f1)
+  PROJECT_NAME=$(echo $STRIPPED | cut -d/ -f2 | cut -d. -f1)
+
+  case "$REPO" in
+    *github*)
+      DIR=GitHub
+      ;;
+    *bitbucket*)
+      DIR=BitBucket
+      ;;
+  esac
+
+  PROJECT_PATH=~/Development/${DIR}/${PROJECT_GROUP}
+
+  if [[ ! -d "$PROJECT_PATH/$PROJECT_NAME" ]]
+  then
+    mkdir -p $PROJECT_PATH
+    git clone $CLEANED $PROJECT_PATH/$PROJECT_NAME
+  fi
+
+  cd $PROJECT_PATH/$PROJECT_NAME
+  code $PROJECT_PATH/$PROJECT_NAME
+}
+
+function figma() {
+  open "$1" -a Figma.app
+}

@@ -1,0 +1,26 @@
+# Alias'
+alias ll="ls -FGlAhp"
+alias edit="code"
+alias f='open -a Finder ./'
+alias ~="cd ~"
+alias ..='cd ../'
+alias ...='cd ../../'
+alias which='type -all'
+alias cic='set completion-ignore-case On'
+alias DT='tee ~/Desktop/terminalOut.txt'
+alias lr='ls -R | grep ":$" | sed -e '\''s/:$//'\'' -e '\''s/[^-][^\/]*\//--/g'\'' -e '\''s/^/   /'\'' -e '\''s/-/|/'\'' | less'
+alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10'
+alias memHogsTop='top -l 1 -o rsize | head -20'
+alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
+alias myip='curl ip.appspot.com'
+alias netCons='lsof -i'
+alias flushDNS='dscacheutil -flushcache'
+alias fp='ps -ef | grep $@'
+alias pblocal='ansible-playbook -i ~/ansible-localhost-inventory --connection=local'
+alias g='git'
+__git_complete g __git_main
+alias uuid="uuidgen | tr '[:upper:]' '[:lower:]'"
+alias lsl="ls -lhFA | less"
+alias wr='wercker'
+alias gs='git status'
+alias gbs='git branch -a | grep "$@"'
